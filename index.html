@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Lumière Perfume — Fragrance crafted in light</title>
+<meta name="description" content="Lumière Perfume is a fragrance house crafting eau de parfum and fine scents from rare ingredients. Explore our collections and follow us on every social platform." />
+<meta name="author" content="Lumière Perfume" />
+<meta name="theme-color" content="#8a6322" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0a0908" media="(prefers-color-scheme: dark)" />
+
+<!-- Open Graph / social preview -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Lumière Perfume" />
+<meta property="og:title" content="Lumière Perfume — Fragrance crafted in light" />
+<meta property="og:description" content="Eau de parfum and fine fragrance, crafted in small batches. All our social links in one place." />
+<meta property="og:image" content="profile/lumiere-monogram.png" />
+<meta name="twitter:card" content="summary" />
+
+<link rel="icon" href="profile/favicon.png" type="image/png" />
+<link rel="apple-touch-icon" href="profile/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+
+<script>
+  /* Set the theme before first paint so the page never flashes the wrong colours. */
+  (function () {
+    try {
+      var saved = localStorage.getItem('lumiere-theme');
+      var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', saved || system);
+    } catch (e) { /* private browsing: fall back to the light theme */ }
+  })();
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Lumière Perfume",
+  "slogan": "Fragrance crafted in light.",
+  "image": "profile/lumiere-monogram.png",
+  "description": "Lumière Perfume is an independent fragrance house crafting eau de parfum and fine scents in small batches.",
+  "address": { "@type": "PostalAddress", "addressLocality": "Addis Ababa", "addressCountry": "ET" }
+}
+</script>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- ======================= HEADER ======================= -->
+<header class="site-header" id="siteHeader">
+  <div class="wrap header-inner">
+    <a class="brand" href="#top" aria-label="Lumière Perfume — back to top">
+      <span class="brand-mark" aria-hidden="true">
+        <img src="profile/lumiere-monogram.png" alt="" width="40" height="40" />
+      </span>
+      <span class="brand-text">
+        <strong>Lumière Perfume</strong>
+        <small>Fragrance crafted in light</small>
+      </span>
+    </a>
+
+    <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+      <a href="#about" data-navlink>About</a>
+      <a href="#social" data-navlink>Social</a>
+      <a href="#contact" data-navlink>Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch colour theme" title="Switch theme">
+        <span class="ico ico-sun" aria-hidden="true"></span>
+        <span class="ico ico-moon" aria-hidden="true"></span>
+      </button>
+      <button class="btn btn-primary btn-sm" id="shareBtn" type="button">
+        <span class="ico ico-share" aria-hidden="true"></span>
+        <span>Share</span>
+      </button>
+      <button class="icon-btn nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+        <span class="ico ico-menu" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<span id="top"></span>
+
+<!-- ======================= HERO / PROFILE ======================= -->
+<section class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+
+    <div class="profile-card reveal">
+      <div class="avatar-ring">
+        <img class="avatar" src="profile/lumiere-monogram.png" alt="Lumière Perfume logo" width="112" height="112" />
+      </div>
+
+      <h1 class="profile-title">
+        Lumière&nbsp;Perfume
+        <span class="verified" title="Established fragrance house" aria-label="Established fragrance house">
+          <span class="ico ico-shield-check" aria-hidden="true"></span>
+        </span>
+      </h1>
+
+      <p class="profile-handle">@lumiereperfume</p>
+      <p class="profile-tagline">Fragrance crafted in light.</p>
+
+      <p class="profile-location">
+        <span class="ico ico-map-pin" aria-hidden="true"></span>
+        Addis Ababa, Ethiopia
+      </p>
+
+      <ul class="profile-stats" aria-label="House highlights">
+        <li><strong>Small</strong><span>Batch crafted</span></li>
+        <li><strong>24</strong><span>Signature scents</span></li>
+        <li><strong>100%</strong><span>Hand finished</span></li>
+      </ul>
+
+      <!-- Reach us at a glance. Same list the admin edits on the Contact
+           tab, rendered as compact icon chips by render.js.
+
+           Keep this markup identical to what applyProfileChannels() builds,
+           otherwise a first-time visitor (who sees this) and someone who has
+           saved in the admin (who sees the JS version) get different shapes. -->
+      <nav class="profile-channels" id="profileChannels" aria-label="Call and message us">
+        <a class="pc-chip qc-phone" href="tel:0911000000" title="Call us" aria-label="Call us">
+          <span class="ico ico-phone" aria-hidden="true"></span>
+        </a>
+        <a class="pc-chip qc-whatsapp" href="https://wa.me/251911000000" target="_blank" rel="noopener noreferrer" title="WhatsApp" aria-label="WhatsApp">
+          <span class="ico ico-whatsapp" aria-hidden="true"></span>
+        </a>
+        <a class="pc-chip qc-telegram" href="https://t.me/lumiereperfume" target="_blank" rel="noopener noreferrer" title="Telegram" aria-label="Telegram">
+          <span class="ico ico-telegram" aria-hidden="true"></span>
+        </a>
+        <a class="pc-chip qc-instagram" href="https://www.instagram.com/lumiereperfume" target="_blank" rel="noopener noreferrer" title="Instagram" aria-label="Instagram">
+          <span class="ico ico-instagram" aria-hidden="true"></span>
+        </a>
+        <a class="pc-chip qc-tiktok" href="https://www.tiktok.com/@lumiereperfume" target="_blank" rel="noopener noreferrer" title="TikTok" aria-label="TikTok">
+          <span class="ico ico-tiktok" aria-hidden="true"></span>
+        </a>
+        <!-- Same query Store.quickHref() builds for kind "map":
+             encodeURIComponent("Lumière Perfume Addis Ababa, Ethiopia") -->
+        <a class="pc-chip qc-map-pin" href="https://www.google.com/maps/search/?api=1&amp;query=Lumi%C3%A8re%20Perfume%20Addis%20Ababa%2C%20Ethiopia" target="_blank" rel="noopener noreferrer" title="Location" aria-label="Location">
+          <span class="ico ico-map-pin" aria-hidden="true"></span>
+        </a>
+      </nav>
+
+      <div class="hero-buttons">
+        <a class="btn btn-primary" href="#social">
+          <span class="ico ico-sparkles" aria-hidden="true"></span> Explore scents
+        </a>
+        <a class="btn btn-ghost" href="tel:0911000000">
+          <span class="ico ico-phone" aria-hidden="true"></span> Call the atelier
+        </a>
+        <button class="btn btn-ghost" type="button" id="vcardBtn">
+          <span class="ico ico-badge" aria-hidden="true"></span> Save contact
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-side">
+      <a class="quick-card reveal" href="#social">
+        <span class="quick-icon qc-msg"><span class="ico ico-perfume-bottle" aria-hidden="true"></span></span>
+        <span class="quick-text">
+          <strong>Our collections</strong>
+          <small>Signature scents &amp; limited editions</small>
+        </span>
+        <span class="ico ico-arrow" aria-hidden="true"></span>
+      </a>
+
+      <a class="quick-card reveal" href="#about">
+        <span class="quick-icon qc-tg"><span class="ico ico-flower" aria-hidden="true"></span></span>
+        <span class="quick-text">
+          <strong>Our ingredients</strong>
+          <small>Rare botanicals, responsibly sourced</small>
+        </span>
+        <span class="ico ico-arrow" aria-hidden="true"></span>
+      </a>
+
+      <a class="quick-card reveal" href="#contact">
+        <span class="quick-icon qc-pin"><span class="ico ico-droplet" aria-hidden="true"></span></span>
+        <span class="quick-text">
+          <strong>Book a consultation</strong>
+          <small>Find your signature scent</small>
+        </span>
+        <span class="ico ico-arrow" aria-hidden="true"></span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+
+<!-- ======================= ABOUT / INTRODUCTION ======================= -->
+<section class="section" id="about">
+  <div class="wrap">
+    <header class="section-head reveal">
+      <span class="eyebrow"><span class="ico ico-sparkles" aria-hidden="true"></span> Our story</span>
+      <h2 class="section-title">The Lumière Story</h2>
+      <p class="section-lead">
+        An independent fragrance house from Addis Ababa, making eaux de parfum in small batches.
+      </p>
+    </header>
+
+    <div class="about-grid">
+      <article class="about-copy reveal">
+        <p>
+          <strong>Lumière</strong> — the French word for light — is what we set out to bottle. Perfume is
+          memory made visible: a single whiff can return you to a courtyard, a season, someone you loved.
+          We founded this house on the belief that a fragrance should be composed with that much care.
+        </p>
+        <p>
+          Every Lumière scent begins in our atelier with a <em>accord</em> — a small architecture of notes
+          built around one idea. Bergamot and pink pepper lift the opening, Turkish rose and orris settle
+          into the heart, and oud, amber and vanilla hold the whole composition close to the skin for hours
+          after the first spray has gone.
+        </p>
+        <p>
+          We work in small batches, macerate every formula for weeks before bottling, and hand-finish each
+          flacon. Nothing is rushed and nothing is over-formulated, because <strong>fragrance crafted in
+          light</strong> is not a slogan — it is simply how the work should be done.
+        </p>
+
+        <ul class="about-points">
+          <li><span class="ico ico-check" aria-hidden="true"></span> Composed in small batches</li>
+          <li><span class="ico ico-check" aria-hidden="true"></span> Rare, traceable botanicals</li>
+          <li><span class="ico ico-check" aria-hidden="true"></span> Macerated for depth, not speed</li>
+          <li><span class="ico ico-check" aria-hidden="true"></span> Hand-filled and hand-finished</li>
+        </ul>
+      </article>
+
+      <div class="about-cards">
+        <article class="feature-card reveal">
+          <span class="feature-icon fi-1"><span class="ico ico-perfume-bottle" aria-hidden="true"></span></span>
+          <h3>Signature scents</h3>
+          <p>From bright citrus florals to deep resinous oud — a wardrobe of scents built to be worn every day.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <span class="feature-icon fi-2"><span class="ico ico-flower" aria-hidden="true"></span></span>
+          <h3>Rare botanicals</h3>
+          <p>Turkish rose, orris butter, saffron and oud — sourced from growers and distillers we know by name.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <span class="feature-icon fi-3"><span class="ico ico-droplet" aria-hidden="true"></span></span>
+          <h3>True concentration</h3>
+          <p>Generous parfum concentrations that open brightly, settle beautifully and stay close to the skin.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <span class="feature-icon fi-4"><span class="ico ico-gift" aria-hidden="true"></span></span>
+          <h3>Bespoke &amp; gifting</h3>
+          <p>Layering consultation, private appointments and hand-wrapped gift sets for the people who matter.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================= SOCIAL LINKS ======================= -->
+<section class="section section-social" id="social">
+  <div class="wrap">
+    <header class="section-head reveal">
+      <span class="eyebrow"><span class="ico ico-users" aria-hidden="true"></span> Connect with us</span>
+      <h2 class="section-title">Follow Lumière</h2>
+      <p class="section-lead">
+        Every one of our channels lives in one place — pick your favourite and say hello.
+      </p>
+    </header>
+
+    <div class="social-grid">
+
+      <a class="social-card sc-instagram reveal"
+         href="https://www.instagram.com/lumiereperfume"
+         target="_blank" rel="noopener noreferrer" data-net="instagram">
+        <span class="sc-icon"><span class="ico ico-instagram" aria-hidden="true"></span></span>
+        <span class="sc-body">
+          <strong>Instagram</strong>
+          <small>@lumiereperfume — new scents &amp; behind the scenes</small>
+        </span>
+        <span class="ico ico-arrow sc-go" aria-hidden="true"></span>
+      </a>
+
+      <a class="social-card sc-tiktok reveal"
+         href="https://www.tiktok.com/@lumiereperfume"
+         target="_blank" rel="noopener noreferrer" data-net="tiktok">
+        <span class="sc-icon"><span class="ico ico-tiktok" aria-hidden="true"></span></span>
+        <span class="sc-body">
+          <strong>TikTok</strong>
+          <small>@lumiereperfume — scent stories &amp; layering tips</small>
+        </span>
+        <span class="ico ico-arrow sc-go" aria-hidden="true"></span>
+      </a>
+
+      <a class="social-card sc-telegram reveal"
+         href="https://t.me/lumiereperfume"
+         target="_blank" rel="noopener noreferrer" data-net="telegram">
+        <span class="sc-icon"><span class="ico ico-telegram" aria-hidden="true"></span></span>
+        <span class="sc-body">
+          <strong>Telegram</strong>
+          <small>lumiereperfume — restocks &amp; private offers</small>
+        </span>
+        <span class="ico ico-arrow sc-go" aria-hidden="true"></span>
+      </a>
+
+      <a class="social-card sc-whatsapp reveal"
+         href="sms:0911000000" data-net="whatsapp">
+        <span class="sc-icon"><span class="ico ico-message" aria-hidden="true"></span></span>
+        <span class="sc-body">
+          <strong>Direct message</strong>
+          <small>Ask about a scent or book a consultation</small>
+        </span>
+        <span class="ico ico-arrow sc-go" aria-hidden="true"></span>
+      </a>
+
+      <a class="social-card sc-pinterest reveal"
+         href="https://www.pinterest.com/lumiereperfume"
+         target="_blank" rel="noopener noreferrer" data-net="pinterest">
+        <span class="sc-icon"><span class="ico ico-pinterest" aria-hidden="true"></span></span>
+        <span class="sc-body">
+          <strong>Pinterest</strong>
+          <small>Lookbooks and scent mood boards</small>
+        </span>
+        <span class="ico ico-arrow sc-go" aria-hidden="true"></span>
+      </a>
+
+      <a class="social-card sc-facebook reveal"
+         href="https://www.facebook.com/lumiereperfume"
+         target="_blank" rel="noopener noreferrer" data-net="facebook">
+        <span class="sc-icon"><span class="ico ico-facebook" aria-hidden="true"></span></span>
+        <span class="sc-body">
+          <strong>Facebook</strong>
+          <small>Events and community</small>
+        </span>
+        <span class="ico ico-arrow sc-go" aria-hidden="true"></span>
+      </a>
+
+      <a class="social-card sc-youtube reveal"
+         href="https://www.youtube.com/@lumiereperfume"
+         target="_blank" rel="noopener noreferrer" data-net="youtube">
+        <span class="sc-icon"><span class="ico ico-youtube" aria-hidden="true"></span></span>
+        <span class="sc-body">
+          <strong>YouTube</strong>
+          <small>Long-form scent stories</small>
+        </span>
+        <span class="ico ico-arrow sc-go" aria-hidden="true"></span>
+      </a>
+
+    </div>
+
+    <p class="social-note reveal">
+      <span class="ico ico-sparkles" aria-hidden="true"></span>
+      These handles are placeholders. Add your real profile URLs in <code>index.html</code>
+      or through the admin panel, and the links go live.
+    </p>
+  </div>
+</section>
+
+
+<!-- ======================= CONTACT ======================= -->
+<section class="section section-contact" id="contact">
+  <div class="wrap">
+    <header class="section-head reveal">
+      <span class="eyebrow"><span class="ico ico-message" aria-hidden="true"></span> Get in touch</span>
+      <h2 class="section-title">We'd love to hear from you</h2>
+      <p class="section-lead">Questions, bespoke blending or gift orders — reach us however suits you best.</p>
+    </header>
+    <!-- Primary actions. Phone is first, because calling is what most
+         customers actually want. Rebuilt by render.js once the admin saves. -->
+    <div class="quick-contact" id="contactQuick">
+      <a class="qc-btn qc-phone qc-lead reveal" href="tel:0911000000">
+        <span class="qc-icon"><span class="ico ico-phone" aria-hidden="true"></span></span>
+        <span class="qc-text">
+          <strong>Call us</strong>
+          <small>Ring the atelier</small>
+        </span>
+      </a>
+
+      <a class="qc-btn qc-whatsapp reveal" href="https://wa.me/251911000000" target="_blank" rel="noopener noreferrer">
+        <span class="qc-icon"><span class="ico ico-whatsapp" aria-hidden="true"></span></span>
+        <span class="qc-text">
+          <strong>WhatsApp</strong>
+          <small>Message us instantly</small>
+        </span>
+      </a>
+
+      <a class="qc-btn qc-telegram reveal" href="https://t.me/lumiereperfume" target="_blank" rel="noopener noreferrer">
+        <span class="qc-icon"><span class="ico ico-telegram" aria-hidden="true"></span></span>
+        <span class="qc-text">
+          <strong>Telegram</strong>
+          <small>Join the channel</small>
+        </span>
+      </a>
+
+      <a class="qc-btn qc-instagram reveal" href="https://www.instagram.com/lumiereperfume" target="_blank" rel="noopener noreferrer">
+        <span class="qc-icon"><span class="ico ico-instagram" aria-hidden="true"></span></span>
+        <span class="qc-text">
+          <strong>Instagram</strong>
+          <small>New scents &amp; stories</small>
+        </span>
+      </a>
+
+      <a class="qc-btn qc-tiktok reveal" href="https://www.tiktok.com/@lumiereperfume" target="_blank" rel="noopener noreferrer">
+        <span class="qc-icon"><span class="ico ico-tiktok" aria-hidden="true"></span></span>
+        <span class="qc-text">
+          <strong>TikTok</strong>
+          <small>Scent stories</small>
+        </span>
+      </a>
+
+      <a class="qc-btn qc-map-pin reveal" href="https://www.google.com/maps/search/?api=1&amp;query=Lumiere%20Perfume%20Addis%20Ababa" target="_blank" rel="noopener noreferrer">
+        <span class="qc-icon"><span class="ico ico-map-pin" aria-hidden="true"></span></span>
+        <span class="qc-text">
+          <strong>Location</strong>
+          <small>Addis Ababa, Ethiopia</small>
+        </span>
+      </a>
+    </div>
+
+
+
+    <div class="contact-grid">
+      <a class="contact-card ct-lead reveal" href="tel:0911000000">
+        <span class="ct-icon ct-phone"><span class="ico ico-phone" aria-hidden="true"></span></span>
+        <span class="ct-text">
+          <strong>Call the atelier</strong>
+          <small data-phone-text>0911 000 000</small>
+        </span>
+        <span class="ico ico-arrow ct-go" aria-hidden="true"></span>
+      </a>
+
+      <a class="contact-card reveal" href="sms:0911000000">
+        <span class="ct-icon ct-msg"><span class="ico ico-message" aria-hidden="true"></span></span>
+        <span class="ct-text">
+          <strong>Send a message</strong>
+          <small>Ask about a scent or request a sample</small>
+        </span>
+        <span class="ico ico-arrow ct-go" aria-hidden="true"></span>
+      </a>
+
+      <a class="contact-card reveal"
+         href="https://www.bing.com/maps/search?ty=0&amp;v=2&amp;sV=1&amp;style=r&amp;q=Lumiere+Perfume+Addis+Ababa"
+         target="_blank" rel="noopener noreferrer">
+        <span class="ct-icon ct-pin"><span class="ico ico-map-pin" aria-hidden="true"></span></span>
+        <span class="ct-text">
+          <strong>Visit the boutique</strong>
+          <small>Addis Ababa, Ethiopia</small>
+        </span>
+        <span class="ico ico-arrow ct-go" aria-hidden="true"></span>
+      </a>
+
+      <button class="contact-card reveal" type="button" id="copyPhoneBtn">
+        <span class="ct-icon ct-copy"><span class="ico ico-copy" aria-hidden="true"></span></span>
+        <span class="ct-text">
+          <strong>Copy number</strong>
+          <small data-phone-text>0911 000 000</small>
+        </span>
+        <span class="ico ico-check ct-go" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ======================= FOOTER ======================= -->
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <span class="brand-mark admin-tap" id="adminTrigger" role="button" tabindex="-1" aria-hidden="true">
+        <img src="profile/lumiere-monogram.png" alt="" width="40" height="40" />
+      </span>
+      <div>
+        <strong>Lumière Perfume</strong>
+        <small>Fragrance crafted in light.</small>
+      </div>
+    </div>
+
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="#about">About</a>
+      <a href="#social">Social</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="footer-social" aria-label="Lumière Perfume on social media">
+      <a href="https://www.instagram.com/lumiereperfume" target="_blank" rel="noopener noreferrer" aria-label="Lumière Perfume on Instagram"><span class="ico ico-instagram" aria-hidden="true"></span></a>
+      <a href="https://www.tiktok.com/@lumiereperfume" target="_blank" rel="noopener noreferrer" aria-label="Lumière Perfume on TikTok"><span class="ico ico-tiktok" aria-hidden="true"></span></a>
+      <a href="https://t.me/lumiereperfume" target="_blank" rel="noopener noreferrer" aria-label="Lumière Perfume on Telegram"><span class="ico ico-telegram" aria-hidden="true"></span></a>
+    </div>
+  </div>
+
+  <div class="wrap footer-bottom">
+    <p>&copy; <span id="year">2026</span> Lumière Perfume. All rights reserved.</p>
+    <button class="to-top" type="button" id="toTop" aria-label="Back to top">
+      <span class="ico ico-arrow-up" aria-hidden="true"></span>
+    </button>
+  </div>
+</footer>
+
+<!-- ======================= ADMIN PANEL (tap footer logo 7x) ======================= -->
+<div class="admin-backdrop" id="adminPanel" hidden>
+  <div class="admin" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+    <div class="admin-head">
+      <div class="admin-head-text">
+        <h2 id="adminTitle">Admin panel</h2>
+        <p>Changes are saved in this browser only. Use the ✕ button to close.</p>
+      </div>
+      <button class="icon-btn" type="button" id="adminClose" aria-label="Close admin panel" title="Close">
+        <span class="ico ico-close" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+      <button class="admin-tab is-active" type="button" role="tab" data-tab="brand" aria-selected="true">Brand</button>
+      <button class="admin-tab" type="button" role="tab" data-tab="about" aria-selected="false">Introduction</button>
+      <button class="admin-tab" type="button" role="tab" data-tab="contact" aria-selected="false">Contact buttons</button>
+      <button class="admin-tab" type="button" role="tab" data-tab="social" aria-selected="false">Social links</button>
+    </div>
+
+    <!-- ---------- TAB: BRAND ---------- -->
+    <div class="admin-pane is-active" data-pane="brand">
+      <div class="field">
+        <label for="ad-logo-file">Logo</label>
+        <div class="logo-row">
+          <span class="logo-preview"><img id="adLogoPreview" src="profile/lumiere-monogram.png" alt="Logo preview" /></span>
+          <div class="logo-actions">
+            <input type="file" id="adLogoFile" accept="image/*" hidden />
+            <button class="btn btn-ghost btn-sm" type="button" id="adLogoPick">Upload logo</button>
+            <button class="btn btn-ghost btn-sm" type="button" id="adLogoReset">Use default</button>
+          </div>
+        </div>
+        <small class="hint">PNG or JPG. Large images are shrunk automatically.</small>
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="ad-name">Brand name</label>
+          <input type="text" id="ad-name" data-bind="brand.name" placeholder="Lumière Perfume" />
+        </div>
+        <div class="field">
+          <label for="ad-handle">Handle</label>
+          <input type="text" id="ad-handle" data-bind="brand.handle" placeholder="@lumiereperfume" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="ad-tagline">Tagline</label>
+        <input type="text" id="ad-tagline" data-bind="brand.tagline" placeholder="Fragrance crafted in light." />
+      </div>
+
+      <div class="field">
+        <label for="ad-location">Location</label>
+        <input type="text" id="ad-location" data-bind="brand.location" placeholder="Addis Ababa, Ethiopia" />
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="ad-phone">Phone (display)</label>
+          <input type="text" id="ad-phone" data-bind="brand.phone" placeholder="0911 000 000" />
+        </div>
+        <div class="field">
+          <label for="ad-tel">Phone (dial, digits only)</label>
+          <input type="tel" id="ad-tel" data-bind="brand.tel" placeholder="0911000000" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- TAB: INTRODUCTION ---------- -->
+    <div class="admin-pane" data-pane="about">
+      <div class="field">
+        <label for="ad-about-title">Section title</label>
+        <input type="text" id="ad-about-title" data-bind="about.title" placeholder="The Lumière Story" />
+      </div>
+
+      <div class="field">
+        <label for="ad-about-lead">Short lead line</label>
+        <textarea id="ad-about-lead" rows="2" data-bind="about.lead"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="ad-about-body">Introduction text</label>
+        <textarea id="ad-about-body" rows="8" data-bind="about.body" placeholder="One paragraph per line…"></textarea>
+        <small class="hint">Each line on its own becomes a paragraph.</small>
+      </div>
+
+      <div class="field">
+        <label for="ad-about-points">Bullet points</label>
+        <textarea id="ad-about-points" rows="4" data-bind="about.points" placeholder="One bullet per line"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Feature cards</label>
+        <div id="adFeatures" class="repeat-list"></div>
+        <button class="btn btn-ghost btn-sm" type="button" id="adFeatureAdd">
+          <span class="ico ico-perfume-bottle" aria-hidden="true"></span> Add feature card
+        </button>
+      </div>
+    </div>
+
+    <!-- ---------- TAB: CONTACT BUTTONS ---------- -->
+    <div class="admin-pane" data-pane="contact">
+      <div class="field">
+        <label>Primary contact buttons</label>
+        <small class="hint">
+          These appear in two places: as the large buttons at the top of the contact
+          section, and as the small round icons on the profile card at the top of the
+          page. The first one is highlighted, so keep the phone number at the top.
+          “Call”, “WhatsApp” and “Map” build their link from the phone number and
+          location you entered on the Brand tab.
+        </small>
+        <div id="adQuick" class="repeat-list"></div>
+        <button class="btn btn-ghost btn-sm" type="button" id="adQuickAdd">
+          <span class="ico ico-phone" aria-hidden="true"></span> Add contact button
+        </button>
+      </div>
+    </div>
+
+    <!-- ---------- TAB: SOCIAL LINKS ---------- -->
+    <div class="admin-pane" data-pane="social">
+      <div class="field">
+        <label>Social media links</label>
+        <div id="adSocials" class="repeat-list"></div>
+        <button class="btn btn-ghost btn-sm" type="button" id="adSocialAdd">
+          <span class="ico ico-users" aria-hidden="true"></span> Add social link
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-foot">
+      <button class="btn btn-ghost" type="button" id="adminResetAll">Reset everything</button>
+      <div class="admin-foot-right">
+        <button class="btn btn-primary" type="button" id="adminSave">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= SHARE SHEET ======================= -->
+<div class="sheet-backdrop" id="shareSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="sheet-head">
+      <h2 id="shareTitle">Share Lumière Perfume</h2>
+      <button class="icon-btn" type="button" id="shareClose" aria-label="Close share dialog">
+        <span class="ico ico-close" aria-hidden="true"></span>
+      </button>
+    </div>
+    <p class="sheet-sub">Send our page to a friend or save it for later.</p>
+    <div class="sheet-grid">
+      <a class="sheet-btn" id="shareNative" href="#" hidden>
+        <span class="ico ico-share" aria-hidden="true"></span><span>Share</span>
+      </a>
+      <button class="sheet-btn" type="button" data-share="whatsapp">
+        <span class="ico ico-whatsapp" aria-hidden="true"></span><span>WhatsApp</span>
+      </button>
+      <button class="sheet-btn" type="button" data-share="telegram">
+        <span class="ico ico-telegram" aria-hidden="true"></span><span>Telegram</span>
+      </button>
+      <button class="sheet-btn" type="button" data-share="facebook">
+        <span class="ico ico-facebook" aria-hidden="true"></span><span>Facebook</span>
+      </button>
+      <button class="sheet-btn" type="button" data-share="x">
+        <span class="ico ico-x-twitter" aria-hidden="true"></span><span>X</span>
+      </button>
+      <button class="sheet-btn" type="button" data-share="copy">
+        <span class="ico ico-copy" aria-hidden="true"></span><span>Copy link</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= TOAST ======================= -->
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span class="ico ico-check" aria-hidden="true"></span>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/render.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
+
