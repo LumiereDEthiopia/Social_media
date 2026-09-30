@@ -3,7 +3,7 @@
    Holds every editable value (logo, introduction, social links) and paints
    it onto the page.
 
-   Storage is the SQLite database behind the Express API:
+   Storage is the hosted PostgreSQL database behind the Vercel API:
    GET  /api/content   load
    PUT  /api/content   save
 
@@ -25,7 +25,7 @@
   var API_URL = '/api/content';
 
   /* The old localStorage key. It is only read once, to migrate a browser that
-     saved content before the SQLite switch; the database is the source of
+     saved content before the database switch; the database is the source of
      truth from then on. */
   var LEGACY_KEY = 'lumiere-content-v1';
 
@@ -140,7 +140,7 @@
   }
 
   /* ---------- read / write ----------
-     The SQLite database is the source of truth, so `content` is an in-memory
+     The database is the source of truth, so `content` is an in-memory
      cache that the first GET /api/content fills in. Until then — and if the
      API is unreachable — it holds the DEFAULTS, which is exactly the state the
      page was in before an admin had ever saved anything. */
@@ -156,9 +156,9 @@
      leaving the admin with a bare "Failed to fetch". */
   function offlineError() {
     var e = new Error(
-      'No server found. Start it with "npm start" and open ' +
-      'http://localhost:3000 — changes are shared through the server, ' +
-      'so they only reach every visitor while the site is served by it.'
+      'No server found. Run "npx vercel dev" locally, or make sure the site ' +
+      'is deployed on Vercel — changes are shared through the database, ' +
+      'so they only reach every visitor while the API is reachable.'
     );
     e.lumiereOffline = true;
     return e;
@@ -211,7 +211,7 @@
   }
 
   /* The old localStorage copy, read only to migrate a browser that saved
-     content before the SQLite switch. */
+     content before the database switch. */
   function readLegacy() {
     try {
       var raw = global.localStorage.getItem(LEGACY_KEY);
@@ -225,7 +225,7 @@
     try { global.localStorage.removeItem(LEGACY_KEY); } catch (e) { /* ignore */ }
   }
 
-  /* Hand a pre-SQLite browser's edits to the database exactly once, so old
+  /* Hand a pre-database browser's edits to the database exactly once, so old
      content is not silently lost. A failed write is simply dropped. */
   function migrateLegacy() {
     var legacy = readLegacy();
@@ -252,7 +252,7 @@
     return base;
   }
 
-  /* Save to SQLite. Resolves with the server response and rejects on failure,
+  /* Save to the database. Resolves with the API response and rejects on failure,
      so the caller can tell the admin their work was NOT stored. */
   function save(data) {
     return fetch(API_URL, {

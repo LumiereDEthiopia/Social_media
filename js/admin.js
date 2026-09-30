@@ -1,8 +1,8 @@
 /* ==========================================================================
    Lumière Perfume — admin panel
    Hidden editor. Open it by tapping the footer logo 7 times in a row.
-   Saving sends the content to PUT /api/content, where the Express server
-   stores it in SQLite. Every visitor then reads it from GET /api/content.
+   Saving sends the content to PUT /api/content, where the Vercel function
+   stores it in PostgreSQL. Every visitor reads it from GET /api/content.
    ========================================================================== */
 (function (global) {
   'use strict';
@@ -350,7 +350,7 @@
 
     /* ---------- open / close ---------- */
     function open() {
-      /* The content lives in SQLite and arrives over the API, so the form is
+      /* The content lives in the database and arrives over the API, so the form is
          filled as soon as that resolves. The panel still opens instantly. */
       touched = false;
       lastFocused = doc.activeElement;
@@ -365,7 +365,7 @@
         /* Nothing can be shared without the server, so say so straight away
            rather than letting the admin type everything and lose it on Save. */
         if (Store.isOffline && Store.isOffline()) {
-          notify('No server found — run "npm start" and open http://localhost:3000, or saving will not reach every visitor');
+          notify('No server found — run "npx vercel dev" locally, or deploy the site on Vercel, or saving will not reach every visitor');
         }
       });
 
@@ -512,8 +512,8 @@
 
 
     /* ---------- actions ---------- */
-    /* Save sends the collected content to PUT /api/content. The Express
-       server writes it to SQLite, so the change is now global. The existing
+    /* Save sends the collected content to PUT /api/content. The API writes
+       it to the database, so the change is now global. The existing
        form, preview, buttons and success toast all behave as before. */
     function save() {
       /* The very first open can be pressed before GET /api/content has

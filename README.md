@@ -3,9 +3,9 @@
 A single-page website that puts **every Lumière Perfume social media link in one
 place**, along with an introduction to the fragrance house.
 
-Built with **plain HTML, CSS and JavaScript** for the front end, plus a small
-**Node.js + Express + SQLite** back end that stores the admin's content and
-serves it to every visitor. No React, no Tailwind, no build step.
+Built with **plain HTML, CSS and JavaScript** for the front end. The admin's
+content is stored in a **hosted PostgreSQL** database and reached through a
+small **Vercel serverless function**. No React, no Tailwind, no build step.
 
 ---
 
@@ -17,17 +17,12 @@ Social Media link/
 ├── css/
 │   └── style.css       # All styling, incl. light + dark themes + admin panel
 ├── js/
-│   ├── store.js        # Default content + API read/write (SQLite-backed)
+│   ├── store.js        # Default content + API read/write
 │   ├── render.js       # Paints saved content onto the page
 │   ├── admin.js        # Hidden admin panel (7-tap unlock)
 │   └── main.js         # Theme, nav, share, copy, vCard, reveal
-├── server/
-│   ├── server.js       # Express app: serves the site + the content API
-│   ├── database.js     # SQLite (local file or hosted) + defaults + get/save/reset
-│   └── routes/
-│       └── content.js  # GET / PUT / reset endpoints
-├── data/
-│   └── database.sqlite # The content database (created automatically, local only)
+├── api/
+│   └── content.js      # Vercel function: GET / PUT / reset, backed by PostgreSQL
 ├── icon/               # 36 standalone SVG icons
 └── profile/            # Logo / monogram images
 ```
@@ -87,20 +82,20 @@ when tapped — the rest keep working.
 
 ### Where your data lives
 
-Everything is stored in a **SQLite database** on the server, at
-`data/database.sqlite`. When the admin presses **Save changes**, the content is
-sent to the API, written to SQLite, and every visitor gets the new version on
-their next page load.
+Everything is stored in a **hosted PostgreSQL** database. When the admin
+presses **Save changes**, the content is sent to `PUT /api/content`, written
+to the database, and every visitor gets the new version on their next page
+load.
 
 That means:
 
 - Changes show for **every visitor**, on every device and browser.
-- They survive a refresh, a browser restart and a server restart.
+- They survive a refresh, a browser restart, a cold start and a redeploy.
 - Clearing your browser data no longer erases them.
 
-The database is created and seeded with the original content the first time the
-server runs. From then on SQLite is the only source of truth — the shipped
-defaults are never written back over your changes.
+The table is created and seeded with the original content the first time the
+API runs. From then on the database is the only source of truth — the
+shipped defaults are never written back over your changes.
 
 > If a browser that saved content under the old `localStorage` setup visits the
 > site, that content is handed to the database once so it is not lost. It is
@@ -111,80 +106,84 @@ defaults are never written back over your changes.
 
 ## API
 
+`api/content.js` is a Vercel serverless function. It does not listen on a
+port and does not use local files.
+
 | Method | Endpoint | What it does |
 | --- | --- | --- |
 | `GET` | `/api/content` | Returns the current content: `{ success, data, updatedAt }` |
 | `PUT` | `/api/content` | Replaces the content. Body is the content object. Returns `{ success, message, data, updatedAt }` |
 | `POST` | `/api/content/reset` | Restores the original content ("Reset everything") |
-| `GET` | `/api/health` | `{ success, status, database }` — for deployment checks |
 
-The site and the API are served by the same Express app, so all calls use the
+The page and the API are on the same domain, so the frontend uses the
 relative path `/api/content` and no CORS configuration is needed.
+
+The whole website content is **one record** in **one table**:
+
+```sql
+CREATE TABLE IF NOT EXISTS content (
+  id         INTEGER PRIMARY KEY,
+  data       TEXT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+`id` is always `1` and `data` holds the existing content object exactly as
+`js/store.js` defines it — no new content model was invented.
 
 ---
 
-## How to run it
+## Running it locally
 
 ```bash
 npm install
-npm start
+npx vercel dev
 ```
 
-Then open **http://localhost:3000**.
+`vercel dev` runs the site and the function together, exactly as Vercel does
+in production. Point `POSTGRES_URL` at any hosted PostgreSQL (a free Neon or
+Supabase database works) and the whole flow behaves identically to the
+deployed site.
 
-The port can be changed with the `PORT` environment variable. Locally there is
-**nothing to configure**: the database is a local SQLite file at
-`data/database.sqlite`, created and seeded on first run.
-
-> **The site must be served by Node**, not opened as a file and not put on
-> a static host like GitHub Pages. Saved content lives in the server's
-> SQLite database, so if there is no server behind the page the admin's
-> change can only ever be seen in that one browser. If that happens the
-> admin panel says *"No server found"* and refuses to pretend it saved.
-> With `npm start` (or Vercel) running, every visitor sees every change.
+> **The site must be served by Vercel**, not opened as a file and not put on
+> a static host like GitHub Pages. Saved content lives in the PostgreSQL
+> database, so if there is no API behind the page the admin's change can only
+> ever be seen in that one browser. If that happens the admin panel says
+> *"No server found"* and refuses to pretend it saved. When the Vercel
+> function is running, every visitor sees every change.
 
 ---
 
 ## Deploying to Vercel
 
-`vercel.json` is already in the project, so Vercel is ready as-is:
+The project is ready as-is — there is no build step and no start command.
 
 | Setting | Value |
 | --- | --- |
-| Framework preset | Other |
-| Build command | `npm install` (automatic) |
+| Framework preset | **Other** |
+| Build command | *(leave empty)* |
 | Install command | `npm install` |
-| Health check path | `/api/health` |
+| Output directory | *(leave empty)* |
 
-The server exports the Express app and, on Vercel, does not bind a port
-itself — Vercel owns that.
+Vercel serves `index.html`, `css/`, `js/`, `icon/` and `profile/` as static
+files and turns `api/content.js` into a serverless function at
+`/api/content`.
 
-### The database: use hosted SQLite (Turso)
+### Connect the database
 
-**Vercel has no persistent disk.** Its filesystem is read-only and reset on
-every cold start and redeploy, so a `database.sqlite` file created inside the
-app would be wiped. Use a hosted SQLite database instead — it is shared by
-every instance, which is exactly what makes an admin change reach every
-visitor.
+Vercel has no persistent disk, so the database must be external. The quickest
+route is Vercel's own:
 
-1. Create a free database at **https://turso.tech**
-2. In a terminal: `turso db create lumiere`
-3. Copy the two values it prints into **Vercel → Settings → Environment
-   Variables**:
+1. **Vercel dashboard → Storage → Create Database** (choose Postgres)
+2. Vercel creates `POSTGRES_URL` for you automatically.
 
-   ```
-   DATABASE_URL          libsql://your-db-yourname.turso.io
-   DATABASE_AUTH_TOKEN   eyJhbGciOi...
-   ```
+Any hosted PostgreSQL works too (Neon, Supabase, RDS). Put its **pooled**
+connection string in `POSTGRES_URL` in
+**Project → Settings → Environment Variables**. Nothing is hard-coded and no
+credentials are committed.
 
-4. Redeploy. The table is created automatically on the first request and
-   seeded with the default content.
-
-The same two variables work on any other host (Railway, Render, Fly) if you
-prefer a long-running server with a Volume instead.
-
-The parent directory is created automatically if it does not exist, so the
-first deploy works even before the database file exists.
+Then deploy. The `content` table is created and seeded with the default
+content on the first request, and never overwritten afterwards.
 
 ---
 

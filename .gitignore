@@ -6,8 +6,5 @@ coverage/
 *.log
 .env*
 !.env.example
-
-# SQLite database — generated on first run, never committed.
-# On Railway it lives on a Volume, not in the deploy.
-data/
+.vercel
 
