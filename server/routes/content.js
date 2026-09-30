@@ -30,9 +30,9 @@ function isPlainObject(value) {
 
 /* ---------- GET /api/content ---------- */
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const { data, updatedAt } = db.getContent();
+    const { data, updatedAt } = await db.getContent();
     res.json({ success: true, data, updatedAt });
   } catch (err) {
     console.error('[api] GET /api/content failed:', err);
@@ -42,7 +42,7 @@ router.get('/', (req, res) => {
 
 /* ---------- PUT /api/content ---------- */
 
-router.put('/', (req, res) => {
+router.put('/', async (req, res) => {
   if (!isPlainObject(req.body)) {
     res.status(400).json({
       success: false,
@@ -61,7 +61,7 @@ router.put('/', (req, res) => {
   }
 
   try {
-    const { data, updatedAt } = db.saveContent(req.body);
+    const { data, updatedAt } = await db.saveContent(req.body);
     res.json({
       success: true,
       message: 'Content saved successfully',
@@ -76,9 +76,9 @@ router.put('/', (req, res) => {
 
 /* ---------- POST /api/content/reset ---------- */
 
-router.post('/reset', (req, res) => {
+router.post('/reset', async (req, res) => {
   try {
-    const { data, updatedAt } = db.resetContent();
+    const { data, updatedAt } = await db.resetContent();
     res.json({
       success: true,
       message: 'Content reset to defaults',

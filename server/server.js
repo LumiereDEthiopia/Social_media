@@ -37,18 +37,13 @@ const STATIC_OPTS = { etag: true, lastModified: true, maxAge: 0 };
 
 app.use('/api/content', contentRoutes);
 
-app.get('/api/health', (req, res) => {
-  try {
-    res.json({
-      success: true,
-      status: 'ok',
-      database: db.isConnected() ? 'connected' : 'disconnected'
-    });
-  } catch (err) {
-    res
-      .status(503)
-      .json({ success: false, status: 'error', database: 'disconnected' });
-  }
+app.get('/api/health', async (req, res) => {
+  const connected = await db.isConnected();
+  res.status(connected ? 200 : 503).json({
+    success: connected,
+    status: connected ? 'ok' : 'error',
+    database: connected ? 'connected' : 'disconnected'
+  });
 });
 
 /* ---------- existing website ----------
@@ -93,20 +88,25 @@ app.use((err, req, res, next) => {
 
 /* ---------- listen ---------- */
 
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log('Lumiere Perfume');
-  console.log('  site      http://localhost:' + PORT);
-  console.log('  database  ' + db.DB_PATH);
-  console.log(
-    '  content   ' + (db.wasSeeded ? 'seeded from existing defaults' : 'loaded from SQLite')
-  );
-});
+/* On Vercel the app is imported as a serverless function and Vercel owns the
+   port, so binding one there would fail. Everywhere else (npm start, a normal
+   host) the server listens itself. */
+if (!process.env.VERCEL) {
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    db.wasSeeded().then((seeded) => {
+      console.log('Lumiere Perfume');
+      console.log('  site      http://localhost:' + PORT);
+      console.log('  database  ' + db.DB_LABEL);
+      console.log(
+        '  content   ' + (seeded ? 'seeded from existing defaults' : 'loaded from database')
+      );
+    });
+  });
 
-/* Close the database cleanly so WAL data is always flushed. */
-function shutdown() {
-  server.close(() => process.exit(0));
+  /* Close cleanly so nothing is left half-written. */
+  const shutdown = () => server.close(() => process.exit(0));
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
 }
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
 
 module.exports = app;

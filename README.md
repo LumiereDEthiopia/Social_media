@@ -23,11 +23,11 @@ Social Media link/
 │   └── main.js         # Theme, nav, share, copy, vCard, reveal
 ├── server/
 │   ├── server.js       # Express app: serves the site + the content API
-│   ├── database.js     # SQLite connection, schema, defaults, get/save/reset
+│   ├── database.js     # SQLite (local file or hosted) + defaults + get/save/reset
 │   └── routes/
 │       └── content.js  # GET / PUT / reset endpoints
 ├── data/
-│   └── database.sqlite # The content database (created automatically)
+│   └── database.sqlite # The content database (created automatically, local only)
 ├── icon/               # 36 standalone SVG icons
 └── profile/            # Logo / monogram images
 ```
@@ -132,41 +132,56 @@ npm start
 
 Then open **http://localhost:3000**.
 
-The port can be changed with the `PORT` environment variable, and the database
-location with `DATABASE_PATH` (see `.env.example`). Both are optional — the
-defaults are `3000` and `./data/database.sqlite`.
+The port can be changed with the `PORT` environment variable. Locally there is
+**nothing to configure**: the database is a local SQLite file at
+`data/database.sqlite`, created and seeded on first run.
 
 > **The site must be served by Node**, not opened as a file and not put on
 > a static host like GitHub Pages. Saved content lives in the server's
 > SQLite database, so if there is no server behind the page the admin's
 > change can only ever be seen in that one browser. If that happens the
 > admin panel says *"No server found"* and refuses to pretend it saved.
-> With `npm start` (or Railway) running, every visitor sees every change.
+> With `npm start` (or Vercel) running, every visitor sees every change.
 
 ---
 
-## Deploying to Railway
+## Deploying to Vercel
 
-The project is ready for Railway as-is:
+`vercel.json` is already in the project, so Vercel is ready as-is:
 
 | Setting | Value |
 | --- | --- |
+| Framework preset | Other |
 | Build command | `npm install` (automatic) |
-| Start command | `npm start` |
+| Install command | `npm install` |
 | Health check path | `/api/health` |
 
-The server listens on `0.0.0.0` and uses `process.env.PORT`, which Railway
-sets automatically.
+The server exports the Express app and, on Vercel, does not bind a port
+itself — Vercel owns that.
 
-### Keep the data with a Volume
+### The database: use hosted SQLite (Turso)
 
-Railway's normal filesystem is **ephemeral** — a redeploy or restart would wipe
-the database. To make the content permanent, attach a **Volume mounted at
-`/app/data`** and set:
+**Vercel has no persistent disk.** Its filesystem is read-only and reset on
+every cold start and redeploy, so a `database.sqlite` file created inside the
+app would be wiped. Use a hosted SQLite database instead — it is shared by
+every instance, which is exactly what makes an admin change reach every
+visitor.
 
-```
-DATABASE_PATH=/app/data/database.sqlite
-```
+1. Create a free database at **https://turso.tech**
+2. In a terminal: `turso db create lumiere`
+3. Copy the two values it prints into **Vercel → Settings → Environment
+   Variables**:
+
+   ```
+   DATABASE_URL          libsql://your-db-yourname.turso.io
+   DATABASE_AUTH_TOKEN   eyJhbGciOi...
+   ```
+
+4. Redeploy. The table is created automatically on the first request and
+   seeded with the default content.
+
+The same two variables work on any other host (Railway, Render, Fly) if you
+prefer a long-running server with a Volume instead.
 
 The parent directory is created automatically if it does not exist, so the
 first deploy works even before the database file exists.
