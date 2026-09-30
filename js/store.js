@@ -147,6 +147,27 @@
 
   var content = clone(DEFAULTS);
   var pending = null;   /* the single in-flight (then settled) ready() promise */
+  var offline = false;  /* true once a request failed at the network level */
+
+  /* A network failure means there is no Node server behind the page: the file
+     was opened directly, or it is on a static host such as GitHub Pages.
+     Saved content lives on that server, so without it nothing is shared and
+     only this browser would ever see a change. Say so plainly instead of
+     leaving the admin with a bare "Failed to fetch". */
+  function offlineError() {
+    var e = new Error(
+      'No server found. Start it with "npm start" and open ' +
+      'http://localhost:3000 — changes are shared through the server, ' +
+      'so they only reach every visitor while the site is served by it.'
+    );
+    e.lumiereOffline = true;
+    return e;
+  }
+
+  /* Whether the last attempt to reach the content API failed. */
+  function isOffline() {
+    return offline;
+  }
 
   /* Synchronous accessor: the cached content, DEFAULTS until it is loaded.
      Kept synchronous so the existing callers in render.js, main.js and
@@ -181,6 +202,7 @@
       return content;
     }).catch(function () {
       /* Server unreachable: run on the DEFAULTS so the page still renders. */
+      offline = true;
       content = clone(DEFAULTS);
       return content;
     });
@@ -241,6 +263,7 @@
       },
       body: JSON.stringify(data)
     }).then(function (response) {
+      offline = false;
       return response.json().catch(function () { return {}; }).then(function (result) {
         if (!response.ok) {
           throw new Error(result.message || 'Failed to save content');
@@ -250,6 +273,11 @@
         }
         return result;
       });
+    }).catch(function (err) {
+      /* A network error here means the page is not being served by Node, so
+         the change would land nowhere shared. */
+      if (err && err.lumiereOffline) { throw err; }
+      throw offlineError();
     });
   }
 
@@ -286,6 +314,7 @@
     DEFAULTS: DEFAULTS,
     load: load,
     ready: ready,
+    isOffline: isOffline,
     save: save,
     clear: clear,
     hasSaved: hasSaved,

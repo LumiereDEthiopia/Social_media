@@ -136,8 +136,12 @@ The port can be changed with the `PORT` environment variable, and the database
 location with `DATABASE_PATH` (see `.env.example`). Both are optional — the
 defaults are `3000` and `./data/database.sqlite`.
 
-> The site must be opened through the server, not by double-clicking
-> `index.html`, because the content is now fetched from `/api/content`.
+> **The site must be served by Node**, not opened as a file and not put on
+> a static host like GitHub Pages. Saved content lives in the server's
+> SQLite database, so if there is no server behind the page the admin's
+> change can only ever be seen in that one browser. If that happens the
+> admin panel says *"No server found"* and refuses to pretend it saved.
+> With `npm start` (or Railway) running, every visitor sees every change.
 
 ---
 

@@ -28,6 +28,11 @@ app.set('trust proxy', true);
 /* The admin form can carry an uploaded logo as a data URL. */
 app.use(express.json({ limit: '10mb' }));
 
+/* Never let a browser sit on an old copy of the page scripts. A stale
+   store.js would still write to localStorage, which is exactly the bug where
+   one browser behaves differently from everyone else. Revalidate every time. */
+const STATIC_OPTS = { etag: true, lastModified: true, maxAge: 0 };
+
 /* ---------- API ---------- */
 
 app.use('/api/content', contentRoutes);
@@ -50,10 +55,10 @@ app.get('/api/health', (req, res) => {
    Each folder is mounted explicitly rather than serving ROOT, so the
    database, the server source and .env can never be downloaded. */
 
-app.use('/css', express.static(path.join(ROOT, 'css')));
-app.use('/js', express.static(path.join(ROOT, 'js')));
-app.use('/icon', express.static(path.join(ROOT, 'icon')));
-app.use('/profile', express.static(path.join(ROOT, 'profile')));
+app.use('/css', express.static(path.join(ROOT, 'css'), STATIC_OPTS));
+app.use('/js', express.static(path.join(ROOT, 'js'), STATIC_OPTS));
+app.use('/icon', express.static(path.join(ROOT, 'icon'), STATIC_OPTS));
+app.use('/profile', express.static(path.join(ROOT, 'profile'), STATIC_OPTS));
 
 const INDEX = path.join(ROOT, 'index.html');
 

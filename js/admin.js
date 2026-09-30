@@ -361,6 +361,12 @@
         logoData = working.logo;
         logoDataDark = working.logoDark || working.logo;
         fillForm();
+
+        /* Nothing can be shared without the server, so say so straight away
+           rather than letting the admin type everything and lose it on Save. */
+        if (Store.isOffline && Store.isOffline()) {
+          notify('No server found — run "npm start" and open http://localhost:3000, or saving will not reach every visitor');
+        }
       });
 
       panel.hidden = false;
