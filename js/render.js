@@ -349,10 +349,15 @@
     applyLogo(Store.load());
   };
 
-  /* Paint on load only if the admin has actually saved something. */
-  if (Store.hasSaved()) {
-    applyAll(Store.load());
-  }
+  /* Fetch the content from the API, then paint it over the static HTML.
+     The HTML in index.html is already correct, so this only overrides it
+     once real, saved content has arrived — the page never shows a flash of
+     defaults followed by the real thing. */
+  Store.ready().then(function (content) {
+    if (Store.hasSaved()) { applyAll(content); }
+    /* The grid was rebuilt, so re-attach the "coming soon" handlers. */
+    if (global.LumiereRefresh) { global.LumiereRefresh(); }
+  });
 
 })(window);
 

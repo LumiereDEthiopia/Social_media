@@ -1,7 +1,17 @@
 /* ==========================================================================
    Lumière Perfume — content store
-   Holds every editable value (logo, introduction, social links) in
-   localStorage and paints it onto the page.
+   Holds every editable value (logo, introduction, social links) and paints
+   it onto the page.
+
+   Storage is the SQLite database behind the Express API:
+   GET  /api/content   load
+   PUT  /api/content   save
+
+   The content is read asynchronously, so this file keeps a plain in-memory
+   cache. `load()` is still synchronous — it returns the cached content
+   (the DEFAULTS until the API answers) — so the existing callers in
+   render.js, main.js and admin.js keep working untouched. `ready()` is the
+   promise that resolves once the real content has arrived.
 
    Design rules:
    - The HTML in index.html is the real content, so the page still reads
@@ -12,7 +22,12 @@
 (function (global) {
   'use strict';
 
-  var STORAGE_KEY = 'lumiere-content-v1';
+  var API_URL = '/api/content';
+
+  /* The old localStorage key. It is only read once, to migrate a browser that
+     saved content before the SQLite switch; the database is the source of
+     truth from then on. */
+  var LEGACY_KEY = 'lumiere-content-v1';
 
   /* Two variants of the house mark: the champagne one is tuned for the
      light theme, the lifted one stays legible on the near-black theme. */
@@ -35,8 +50,8 @@
       handle: '@lumiereperfume',
       tagline: 'Fragrance crafted in light.',
       location: 'Addis Ababa, Ethiopia',
-      phone: '0911 000 000',
-      tel: '0911000000'
+      phone: '+251963992222',
+      tel: '+251963992222'
     },
     about: {
       title: 'The Lumière Story',
@@ -124,21 +139,76 @@
     }
   }
 
-  /* ---------- read / write ---------- */
-  function load() {
-    var raw = null;
-    try {
-      raw = global.localStorage.getItem(STORAGE_KEY);
-    } catch (e) {
-      return clone(DEFAULTS); /* private mode: run on defaults */
-    }
-    if (!raw) { return clone(DEFAULTS); }
+  /* ---------- read / write ----------
+     The SQLite database is the source of truth, so `content` is an in-memory
+     cache that the first GET /api/content fills in. Until then — and if the
+     API is unreachable — it holds the DEFAULTS, which is exactly the state the
+     page was in before an admin had ever saved anything. */
 
+  var content = clone(DEFAULTS);
+  var pending = null;   /* the single in-flight (then settled) ready() promise */
+
+  /* Synchronous accessor: the cached content, DEFAULTS until it is loaded.
+     Kept synchronous so the existing callers in render.js, main.js and
+     admin.js need no changes. */
+  function load() {
+    return content;
+  }
+
+  /* Promise for the content once it has been read from the database.
+     Only one request is made; every later caller reuses the same promise. */
+  function ready() {
+    if (pending) { return pending; }
+
+    pending = fetch(API_URL, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+      cache: 'no-store'
+    }).then(function (response) {
+      if (!response.ok) { throw new Error('Failed to load content'); }
+      return response.json();
+    }).then(function (result) {
+      if (!result || !result.data || typeof result.data !== 'object') {
+        throw new Error('Unexpected content response');
+      }
+      content = merge(clone(DEFAULTS), result.data);
+      /* Only hand the old local copy over while the database is still
+         untouched. Otherwise a stale browser could silently roll back
+         content that was properly saved from another device. */
+      if (JSON.stringify(result.data) === JSON.stringify(DEFAULTS)) {
+        migrateLegacy();
+      }
+      return content;
+    }).catch(function () {
+      /* Server unreachable: run on the DEFAULTS so the page still renders. */
+      content = clone(DEFAULTS);
+      return content;
+    });
+
+    return pending;
+  }
+
+  /* The old localStorage copy, read only to migrate a browser that saved
+     content before the SQLite switch. */
+  function readLegacy() {
     try {
-      return merge(clone(DEFAULTS), JSON.parse(raw));
+      var raw = global.localStorage.getItem(LEGACY_KEY);
+      return raw ? JSON.parse(raw) : null;
     } catch (e) {
-      return clone(DEFAULTS); /* corrupt data: fall back safely */
+      return null; /* private mode, or corrupt: nothing to migrate */
     }
+  }
+
+  function dropLegacy() {
+    try { global.localStorage.removeItem(LEGACY_KEY); } catch (e) { /* ignore */ }
+  }
+
+  /* Hand a pre-SQLite browser's edits to the database exactly once, so old
+     content is not silently lost. A failed write is simply dropped. */
+  function migrateLegacy() {
+    var legacy = readLegacy();
+    if (!legacy) { return; }
+    save(merge(clone(DEFAULTS), legacy)).then(dropLegacy, dropLegacy);
   }
 
   /* Per-section merge, so a file saved before a new key existed still works. */
@@ -160,35 +230,67 @@
     return base;
   }
 
+  /* Save to SQLite. Resolves with the server response and rejects on failure,
+     so the caller can tell the admin their work was NOT stored. */
   function save(data) {
-    try {
-      global.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      return true;
-    } catch (e) {
-      /* Most likely the ~5MB quota, e.g. an oversized logo. */
-      return false;
-    }
+    return fetch(API_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (result) {
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to save content');
+        }
+        if (result && result.data) {
+          content = merge(clone(DEFAULTS), result.data);
+        }
+        return result;
+      });
+    });
   }
 
+  /* Back to the original content (the admin's "Reset everything"). */
   function clear() {
-    try { global.localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+    return fetch(API_URL + '/reset', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' }
+    }).then(function (response) {
+      if (!response.ok) { throw new Error('Failed to reset content'); }
+      return response.json();
+    }).then(function (result) {
+      dropLegacy();
+      if (result && result.data) {
+        content = merge(clone(DEFAULTS), result.data);
+      }
+      return result;
+    });
   }
 
+  /* True once content that differs from the shipped DEFAULTS is in the cache.
+     Until then the HTML in index.html is already correct, so render.js leaves
+     it alone. */
   function hasSaved() {
-    try { return !!global.localStorage.getItem(STORAGE_KEY); } catch (e) { return false; }
+    if (!pending) { return false; }
+    return JSON.stringify(content) !== JSON.stringify(DEFAULTS);
   }
 
   global.LumiereStore = {
-    STORAGE_KEY: STORAGE_KEY,
+    API_URL: API_URL,
     DEFAULT_LOGO: DEFAULT_LOGO,
     DEFAULT_LOGO_DARK: DEFAULT_LOGO_DARK,
     ICON_CHOICES: ICON_CHOICES,
     DEFAULTS: DEFAULTS,
     load: load,
+    ready: ready,
     save: save,
     clear: clear,
     hasSaved: hasSaved,
     clone: clone,
+    merge: merge,
     isExternal: isExternal,
     isPending: isPending,
     intlNumber: intlNumber,

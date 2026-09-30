@@ -272,18 +272,34 @@
     if (!openBtn || !sheet) { return; }
 
     var pageUrl = window.location.href.split('#')[0];
-    var pageTitle = document.title;
     var Store = window.LumiereStore;
-    var b = (Store && Store.load().brand) || {};
-    var text = (b.name || 'Lumière Perfume') +
-      (b.tagline ? ' — ' + b.tagline : '');
     var lastFocused = null;
 
+    /* The brand text and the page title are only final once the content has
+       been fetched from the API, so both are read when the sheet opens
+       rather than at page load. */
+    function shareText() {
+      var b = (Store && Store.load().brand) || {};
+      return (b.name || 'Lumière Perfume') +
+        (b.tagline ? ' — ' + b.tagline : '');
+    }
+
     function open() {
+      var text = shareText();
+      var pageTitle = document.title;
+      var targets = {
+        whatsapp: 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + pageUrl),
+        telegram: 'https://t.me/share/url?url=' + encodeURIComponent(pageUrl) + '&text=' + encodeURIComponent(text),
+        facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl),
+        x: 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(pageUrl)
+      };
+
       lastFocused = document.activeElement;
       sheet.hidden = false;
       document.body.classList.add('no-scroll');
       if (closeBtn) { closeBtn.focus(); }
+
+      openBtn._share = { text: text, pageTitle: pageTitle, targets: targets };
     }
 
     function close() {
@@ -309,19 +325,13 @@
       nativeBtn.hidden = false;
       nativeBtn.addEventListener('click', function (e) {
         e.preventDefault();
+        var s = openBtn._share || {};
         close();
-        navigator.share({ title: pageTitle, text: text, url: pageUrl }).catch(function () {
+        navigator.share({ title: s.pageTitle || document.title, text: s.text, url: pageUrl }).catch(function () {
           /* The user dismissed the OS sheet — nothing to report. */
         });
       });
     }
-
-    var targets = {
-      whatsapp: 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + pageUrl),
-      telegram: 'https://t.me/share/url?url=' + encodeURIComponent(pageUrl) + '&text=' + encodeURIComponent(text),
-      facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl),
-      x: 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(pageUrl)
-    };
 
     $$('[data-share]', sheet).forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -338,6 +348,7 @@
           return;
         }
 
+        var targets = (openBtn._share || {}).targets || {};
         if (targets[kind]) {
           window.open(targets[kind], '_blank', 'noopener,noreferrer,width=640,height=560');
           close();
@@ -354,10 +365,12 @@
     if (!btn) { return; }
 
     var Store = window.LumiereStore;
-    /* Read the number from the store so an admin edit is respected. */
-    var number = (Store && Store.load().brand.phone) || '0911 000 000';
 
     btn.addEventListener('click', function () {
+      /* Read the number on click, not on load, so an admin edit that arrived
+         from the API is always respected. */
+      var number = (Store && Store.load().brand.phone) || '+251963992222';
+
       copyText(number).then(function () {
         toast('Number ' + number + ' copied');
         btn.classList.add('is-copied');
@@ -377,23 +390,24 @@
     if (!btn) { return; }
 
     var Store = window.LumiereStore;
-    var b = (Store && Store.load().brand) || {};
-
-    var lines = [
-      'BEGIN:VCARD',
-      'VERSION:3.0',
-      'N:Perfume;Lumière;;;',
-      'FN:Lumière Perfume',
-      'ORG:Lumière Perfume',
-      'TITLE:Fragrance House',
-      'NOTE:Fragrance crafted in light.',
-      'URL:' + window.location.href.split('#')[0],
-      'TEL;TYPE=CELL,VOICE:' + (b.tel || '0911000000'),
-      'ADR;TYPE=WORK:;;' + (b.location || 'Addis Ababa, Ethiopia') + ';;;;',
-      'END:VCARD'
-    ];
 
     btn.addEventListener('click', function () {
+      /* Built on click so the card carries the current saved details. */
+      var b = (Store && Store.load().brand) || {};
+      var lines = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        'N:Perfume;Lumière;;;',
+        'FN:Lumière Perfume',
+        'ORG:Lumière Perfume',
+        'TITLE:Fragrance House',
+        'NOTE:Fragrance crafted in light.',
+        'URL:' + window.location.href.split('#')[0],
+        'TEL;TYPE=CELL,VOICE:' + (b.tel || '+251963992222'),
+        'ADR;TYPE=WORK:;;' + (b.location || 'Addis Ababa, Ethiopia') + ';;;;',
+        'END:VCARD'
+      ];
+
       try {
         var blob = new Blob([lines.join('\r\n')], { type: 'text/vcard;charset=utf-8' });
         var url = URL.createObjectURL(blob);

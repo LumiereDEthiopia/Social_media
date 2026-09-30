@@ -1,7 +1,8 @@
 /* ==========================================================================
    Lumière Perfume — admin panel
    Hidden editor. Open it by tapping the footer logo 7 times in a row.
-   Everything is stored in localStorage (no backend, no build step).
+   Saving sends the content to PUT /api/content, where the Express server
+   stores it in SQLite. Every visitor then reads it from GET /api/content.
    ========================================================================== */
 (function (global) {
   'use strict';
@@ -86,7 +87,7 @@
   })();
 
   /* ------------------------------------------------------------------
-     2. Image helper — shrink uploads so localStorage does not overflow
+     2. Image helper — shrink uploads so the stored content stays a sane size
      ------------------------------------------------------------------ */
   function readImage(file, maxSize) {
     return new Promise(function (resolve, reject) {
@@ -344,15 +345,24 @@
     var logoData = null;      /* staged logo (data URL) */
     var logoDataDark = null;  /* dark-theme variant of the same logo */
     var lastFocused = null;
+    var touched = false;      /* admin has edited the form since it opened */
+    var saveBtn = null;       /* the existing Save button, disabled while saving */
 
     /* ---------- open / close ---------- */
     function open() {
-      working = Store.load();
-      logoData = working.logo;
-      logoDataDark = working.logoDark || working.logo;
+      /* The content lives in SQLite and arrives over the API, so the form is
+         filled as soon as that resolves. The panel still opens instantly. */
+      touched = false;
       lastFocused = doc.activeElement;
 
-      fillForm();
+      Store.ready().then(function () {
+        if (touched) { return; }   /* a late response must not wipe an edit */
+        working = Store.load();
+        logoData = working.logo;
+        logoDataDark = working.logoDark || working.logo;
+        fillForm();
+      });
+
       panel.hidden = false;
       doc.body.classList.add('no-scroll');
       var first = panel.querySelector('input, select, textarea, button');
@@ -496,26 +506,57 @@
 
 
     /* ---------- actions ---------- */
+    /* Save sends the collected content to PUT /api/content. The Express
+       server writes it to SQLite, so the change is now global. The existing
+       form, preview, buttons and success toast all behave as before. */
     function save() {
-      var data = collect();
-      if (!Store.save(data)) {
-        notify('Could not save — the image may be too large');
+      /* The very first open can be pressed before GET /api/content has
+         answered. Wait for it rather than saving a half-built object. */
+      if (!working) {
+        Store.ready().then(function () {
+          working = Store.load();
+          logoData = working.logo;
+          logoDataDark = working.logoDark || working.logo;
+          save();
+        });
         return;
       }
-      Render.apply(data);
-      /* The grid was rebuilt, so re-attach the "coming soon" handlers. */
-      if (global.LumiereRefresh) { global.LumiereRefresh(); }
-      /* Saving keeps the panel open so you can keep tweaking. The X is
-         the only way out, so closing here would be inconsistent. */
-      notify('Changes saved');
+
+      var data = collect();
+
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.setAttribute('aria-busy', 'true');
+      }
+
+      Store.save(data).then(function () {
+        Render.apply(data);
+        /* The grid was rebuilt, so re-attach the "coming soon" handlers. */
+        if (global.LumiereRefresh) { global.LumiereRefresh(); }
+        /* Saving keeps the panel open so you can keep tweaking. The X is
+           the only way out, so closing here would be inconsistent. */
+        notify('Changes saved');
+      }).catch(function (err) {
+        /* Nothing is pretended and nothing is lost: the edited values stay in
+           the form so the admin can fix the problem and press Save again. */
+        notify((err && err.message) || 'Failed to save content. Please try again.');
+      }).then(function () {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.removeAttribute('aria-busy');
+        }
+      });
     }
 
     function resetAll() {
       if (!global.confirm('Reset everything back to the original content?\n\nThis clears your saved logo, introduction and social links.')) {
         return;
       }
-      Store.clear();
-      location.reload();
+      Store.clear().then(function () {
+        location.reload();
+      }).catch(function (err) {
+        notify((err && err.message) || 'Could not reset the content. Please try again.');
+      });
     }
 
     function switchTab(name) {
@@ -539,6 +580,12 @@
       $('#adminClose').addEventListener('click', close);
       $('#adminSave').addEventListener('click', save);
       $('#adminResetAll').addEventListener('click', resetAll);
+
+      saveBtn = $('#adminSave');
+
+      /* Remember that the admin started editing, so a slow content response
+         cannot overwrite what they have already typed. */
+      panel.addEventListener('input', function () { touched = true; });
 
       /* Keep Tab inside the panel, so the X is always reachable. */
       doc.addEventListener('keydown', trapFocus);

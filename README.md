@@ -3,8 +3,9 @@
 A single-page website that puts **every Lumière Perfume social media link in one
 place**, along with an introduction to the fragrance house.
 
-Built with **plain HTML, CSS and JavaScript only** — no React, no Tailwind,
-no build step, no `npm install`. Just open `index.html` in a browser.
+Built with **plain HTML, CSS and JavaScript** for the front end, plus a small
+**Node.js + Express + SQLite** back end that stores the admin's content and
+serves it to every visitor. No React, no Tailwind, no build step.
 
 ---
 
@@ -16,10 +17,17 @@ Social Media link/
 ├── css/
 │   └── style.css       # All styling, incl. light + dark themes + admin panel
 ├── js/
-│   ├── store.js        # Default content + localStorage read/write
+│   ├── store.js        # Default content + API read/write (SQLite-backed)
 │   ├── render.js       # Paints saved content onto the page
 │   ├── admin.js        # Hidden admin panel (7-tap unlock)
 │   └── main.js         # Theme, nav, share, copy, vCard, reveal
+├── server/
+│   ├── server.js       # Express app: serves the site + the content API
+│   ├── database.js     # SQLite connection, schema, defaults, get/save/reset
+│   └── routes/
+│       └── content.js  # GET / PUT / reset endpoints
+├── data/
+│   └── database.sqlite # The content database (created automatically)
 ├── icon/               # 36 standalone SVG icons
 └── profile/            # Logo / monogram images
 ```
@@ -68,66 +76,119 @@ by tapping the panel by accident.
 
 The **Call**, **WhatsApp** and **Map** buttons build their link from the
 phone number and location on the Brand tab, so you only ever type the
-number once and every button stays in sync. Enter the dial number in
-digits only (`0911000000`) and WhatsApp converts it to international form
-automatically. If you leave the number blank, those buttons go grey, show
-"Not set up yet" and do nothing when tapped — the rest keep working.
+number once and every button stays in sync. The default is
+`+251963992222`; type the number in international form (a leading `+` and
+the country code) and WhatsApp converts it automatically. If you leave the
+number blank, those buttons go grey, show "Not set up yet" and do nothing
+when tapped — the rest keep working.
 
 > The "first one is highlighted" — keep the phone button at the top of the
 > list, since it gets the gold treatment.
 
 ### Where your data lives
 
-Everything is stored in your browser's `localStorage` under the key
-`lumiere-content-v1`. **There is no server and no database.**
+Everything is stored in a **SQLite database** on the server, at
+`data/database.sqlite`. When the admin presses **Save changes**, the content is
+sent to the API, written to SQLite, and every visitor gets the new version on
+their next page load.
 
 That means:
 
-- Changes show on **this device and this browser** only.
-- They survive a refresh and a browser restart.
-- They are **not** shared with visitors, and not visible on a phone.
-- Clearing your browser data ("cookies and site data") erases them.
+- Changes show for **every visitor**, on every device and browser.
+- They survive a refresh, a browser restart and a server restart.
+- Clearing your browser data no longer erases them.
+
+The database is created and seeded with the original content the first time the
+server runs. From then on SQLite is the only source of truth — the shipped
+defaults are never written back over your changes.
+
+> If a browser that saved content under the old `localStorage` setup visits the
+> site, that content is handed to the database once so it is not lost. It is
+> only used while the database is still untouched, so a stale browser can never
+> roll back something you have since saved properly.
+
+---
+
+## API
+
+| Method | Endpoint | What it does |
+| --- | --- | --- |
+| `GET` | `/api/content` | Returns the current content: `{ success, data, updatedAt }` |
+| `PUT` | `/api/content` | Replaces the content. Body is the content object. Returns `{ success, message, data, updatedAt }` |
+| `POST` | `/api/content/reset` | Restores the original content ("Reset everything") |
+| `GET` | `/api/health` | `{ success, status, database }` — for deployment checks |
+
+The site and the API are served by the same Express app, so all calls use the
+relative path `/api/content` and no CORS configuration is needed.
 
 ---
 
 ## How to run it
 
-**Option A — just open it**
-Double-click `index.html`. Everything works.
-
-**Option B — local server** (recommended, so the share/copy features get a real URL)
-
 ```bash
-# from inside the "Social Media link" folder
-python -m http.server 8000
-# then visit http://localhost:8000
+npm install
+npm start
 ```
 
-To publish, upload the entire folder to any static host
-(Netlify, Vercel, GitHub Pages, cPanel, Firebase Hosting).
+Then open **http://localhost:3000**.
+
+The port can be changed with the `PORT` environment variable, and the database
+location with `DATABASE_PATH` (see `.env.example`). Both are optional — the
+defaults are `3000` and `./data/database.sqlite`.
+
+> The site must be opened through the server, not by double-clicking
+> `index.html`, because the content is now fetched from `/api/content`.
+
+---
+
+## Deploying to Railway
+
+The project is ready for Railway as-is:
+
+| Setting | Value |
+| --- | --- |
+| Build command | `npm install` (automatic) |
+| Start command | `npm start` |
+| Health check path | `/api/health` |
+
+The server listens on `0.0.0.0` and uses `process.env.PORT`, which Railway
+sets automatically.
+
+### Keep the data with a Volume
+
+Railway's normal filesystem is **ephemeral** — a redeploy or restart would wipe
+the database. To make the content permanent, attach a **Volume mounted at
+`/app/data`** and set:
+
+```
+DATABASE_PATH=/app/data/database.sqlite
+```
+
+The parent directory is created automatically if it does not exist, so the
+first deploy works even before the database file exists.
 
 ---
 
 ## Before you go live — checklist
 
-The site is ready to upload, but **four things must be set first.** They are
+The site is ready to go live, but **four things must be set first.** They are
 not bugs; they are values only you know.
 
-### 1. Replace the placeholder handles and phone number
+### 1. Replace the placeholder handles
 
-`lumiereperfume` and `0911 000 000` are placeholders. The fastest way is the
+`lumiereperfume` is a placeholder. The phone number is already set to
+`+251963992222`. The fastest way to change anything is the
 admin panel (7-tap the footer logo) rather than editing code:
 
-- **Brand tab** → set the real phone. The Call, WhatsApp and Map buttons all
+- **Brand tab** → set the phone. The Call, WhatsApp and Map buttons all
   build themselves from it, so you only type it once.
 - **Contact buttons** → paste the real Telegram, Instagram and TikTok URLs.
 - **Social links** → the same for the full social grid.
 
-Then **Save changes**. Everything is written to your browser, so remember
-the point in **§ Where your data lives** below: those edits live on this
-device only and are not what your visitors see. Visitors always get the
-content in `index.html` and `js/store.js`, so to publish a change for
-everyone, edit those two files as well.
+Then **Save changes**. The content is written to the SQLite database and
+every visitor sees it. If you later press **Reset everything**, the site
+goes back to the defaults in `js/store.js` — which is where the phone
+number `+251963992222` is defined, so a reset always restores it.
 
 ### 2. Make the share image absolute
 
@@ -176,9 +237,9 @@ Find the card in the `<!-- SOCIAL LINKS -->` section and edit its `href`:
 <a class="social-card sc-instagram reveal" href="https://www.instagram.com/YOUR-HANDLE">
 ```
 
-> **Note:** the handles currently in the file (`lumiereperfume`, and the phone
-> number `0911 000 000`) are **placeholders**. Replace them with the real
-> Lumière Perfume profiles and phone number before going live.
+> **Note:** the handles currently in the file (`lumiereperfume`) are
+> **placeholders**. Replace them with the real Lumière Perfume profiles
+> before going live. The phone number (`+251963992222`) is already set.
 
 ### Turn on a "coming soon" channel
 A social card with an empty URL is treated as "coming soon": it stays visible

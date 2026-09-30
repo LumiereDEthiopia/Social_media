@@ -1,0 +1,18 @@
+{
+  "name": "lumiere-social-media-link",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lumière Perfume — social link hub. Static frontend served by Express with a central SQLite content store.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
