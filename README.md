@@ -195,8 +195,13 @@ not bugs; they are values only you know.
 
 ### 1. Replace the placeholder handles
 
-`lumiereperfume` is a placeholder. The phone number is already set to
-`+251963992222`. The fastest way to change anything is the
+The Instagram and TikTok links are already set to the real accounts:
+
+- **Instagram** — `instagram.com/lumiere_perfumeet`
+- **TikTok** — `tiktok.com/@yeab645`
+
+Still placeholders: the `brand.handle` line, and the Telegram, Pinterest,
+Facebook and YouTube URLs. The fastest way to change anything is the
 admin panel (7-tap the footer logo) rather than editing code:
 
 - **Brand tab** → set the phone. The Call, WhatsApp and Map buttons all
@@ -256,9 +261,10 @@ Find the card in the `<!-- SOCIAL LINKS -->` section and edit its `href`:
 <a class="social-card sc-instagram reveal" href="https://www.instagram.com/YOUR-HANDLE">
 ```
 
-> **Note:** the handles currently in the file (`lumiereperfume`) are
-> **placeholders**. Replace them with the real Lumière Perfume profiles
-> before going live. The phone number (`+251963992222`) is already set.
+> **Note:** the Instagram and TikTok links are the real accounts. The
+> remaining handles in the file (`lumiereperfume` for the `brand.handle`
+> line, Telegram, Pinterest, Facebook and YouTube) are still
+> **placeholders**. The phone number (`+251963992222`) is already set.
 
 ### Turn on a "coming soon" channel
 A social card with an empty URL is treated as "coming soon": it stays visible

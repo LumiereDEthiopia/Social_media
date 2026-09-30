@@ -83,13 +83,13 @@
       { icon: 'phone',     label: 'Call us',     sub: 'Ring the atelier',      url: '', kind: 'tel' },
       { icon: 'whatsapp',  label: 'WhatsApp',   sub: 'Message us instantly', url: '', kind: 'wa' },
       { icon: 'telegram',  label: 'Telegram',   sub: 'Join the channel',      url: 'https://t.me/lumiereperfume', kind: 'custom' },
-      { icon: 'instagram', label: 'Instagram',  sub: 'New scents & stories',  url: 'https://www.instagram.com/lumiereperfume', kind: 'custom' },
-      { icon: 'tiktok',    label: 'TikTok',     sub: 'Scent stories',         url: 'https://www.tiktok.com/@lumiereperfume', kind: 'custom' },
+      { icon: 'instagram', label: 'Instagram',  sub: 'New scents & stories',  url: 'https://www.instagram.com/lumiere_perfumeet?stkn=MWE0MzRkdGlreXZibw==', kind: 'custom' },
+      { icon: 'tiktok',    label: 'TikTok',     sub: 'Scent stories',         url: 'https://www.tiktok.com/@yeab645?_r=1&_t=ZS-9A9w1yxER2P', kind: 'custom' },
       { icon: 'map-pin',   label: 'Location',   sub: 'Addis Ababa, Ethiopia', url: '', kind: 'map' }
     ],
     socials: [
-      { name: 'Instagram', url: 'https://www.instagram.com/lumiereperfume', icon: 'instagram', sub: '@lumiereperfume — new scents & behind the scenes' },
-      { name: 'TikTok', url: 'https://www.tiktok.com/@lumiereperfume', icon: 'tiktok', sub: '@lumiereperfume — scent stories & layering tips' },
+      { name: 'Instagram', url: 'https://www.instagram.com/lumiere_perfumeet?stkn=MWE0MzRkdGlreXZibw==', icon: 'instagram', sub: '@lumiere_perfumeet — new scents & behind the scenes' },
+      { name: 'TikTok', url: 'https://www.tiktok.com/@yeab645?_r=1&_t=ZS-9A9w1yxER2P', icon: 'tiktok', sub: '@yeab645 — scent stories & layering tips' },
       { name: 'Telegram', url: 'https://t.me/lumiereperfume', icon: 'telegram', sub: 'lumiereperfume — restocks & private offers' },
       { name: 'WhatsApp', url: '', icon: 'whatsapp', sub: 'Message us on WhatsApp' },
       { name: 'Pinterest', url: 'https://www.pinterest.com/lumiereperfume', icon: 'pinterest', sub: 'Lookbooks and scent mood boards' },
